@@ -890,3 +890,14 @@ function init() {
 }
 
 document.addEventListener("DOMContentLoaded", init);
+
+// ===========================================================================
+// Service Worker — suporte offline (PWA)
+// ===========================================================================
+
+if ("serviceWorker" in navigator && window.location.protocol !== "file:") {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js")
+            .catch(() => { /* offline support é opcional, não falha o app */ });
+    });
+}

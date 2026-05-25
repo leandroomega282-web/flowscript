@@ -1678,6 +1678,27 @@ kbd {
 /* ============ MISC ============ */
 [hidden] { display: none !important; }
 
+/* Skip link (acessibilidade — só visível com Tab) */
+.skip-link {
+    position: fixed;
+    top: -100px;
+    left: 12px;
+    background: var(--accent);
+    color: white;
+    padding: 10px 16px;
+    border-radius: var(--radius);
+    font-weight: 600;
+    z-index: 999;
+    text-decoration: none;
+    transition: top 0.2s;
+}
+
+.skip-link:focus {
+    top: 12px;
+    outline: 2px solid white;
+    outline-offset: 2px;
+}
+
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px; }

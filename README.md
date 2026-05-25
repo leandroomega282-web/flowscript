@@ -1,8 +1,24 @@
-# FlowScript — Gerador Automático de Scripts
+<div align="center">
+
+# FlowScript
+
+**Gerador Automático de Scripts em PowerShell, Bash e Python**
+
+[![Live Demo](https://img.shields.io/badge/demo-online-success?style=flat-square)](https://leandroomega282-web.github.io/flowscript/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square)](LICENSE)
+[![No Build](https://img.shields.io/badge/build-none-orange?style=flat-square)](#)
+[![PWA](https://img.shields.io/badge/PWA-installable-purple?style=flat-square)](#)
+[![Made with](https://img.shields.io/badge/made%20with-HTML%20%2B%20CSS%20%2B%20JS-yellow?style=flat-square)](#)
+
+**[🚀 Abrir demo ao vivo](https://leandroomega282-web.github.io/flowscript/)**
+
+</div>
+
+---
 
 Aplicação web que gera scripts prontos em **PowerShell**, **Bash** e **Python** para 28 tarefas comuns de administração de sistema.
 
-Sem dependências, sem build, sem servidor — só abrir `index.html` no navegador.
+Sem dependências, sem build, sem servidor — só abrir `index.html` no navegador. Funciona até **offline** depois da primeira visita (Service Worker).
 
 ## Tarefas disponíveis (28 × 3 linguagens = 84 templates)
 
@@ -108,11 +124,17 @@ A tarefa **Instalar Software** vem com catálogo visual organizado em 9 categori
 
 ```
 .
-├── index.html       # Estrutura
-├── styles.css       # Tema escuro/claro, layout, animações
-├── highlight.js     # Syntax highlighter (sem libs)
-├── templates.js     # Tarefas, parâmetros, geradores + catálogo de software
-└── app.js           # Estado, eventos, histórico, share, validação
+├── index.html              # Estrutura, meta tags, OG/Twitter cards
+├── styles.css              # Tema escuro/claro, layout subgrid, animações 3D
+├── highlight.js            # Syntax highlighter (sem libs)
+├── templates.js            # Tarefas, parâmetros, geradores + catálogo de software
+├── app.js                  # Estado, eventos, histórico, share URL, validação, SW
+├── sw.js                   # Service Worker (cache offline)
+├── manifest.webmanifest    # PWA install (Android, iOS)
+├── favicon.svg             # Logo em SVG (qualquer tamanho)
+├── og-image.svg            # Preview pra WhatsApp/Twitter/LinkedIn (1200x630)
+├── LICENSE                 # MIT
+└── README.md
 ```
 
 ## Adicionando novas tarefas
