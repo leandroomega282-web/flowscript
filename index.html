@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlowScript — Gerador Automático de Scripts</title>
+    <meta name="description" content="Gerador automático de scripts em PowerShell, Bash e Python para tarefas comuns de administração de sistema.">
+    <meta name="theme-color" content="#5b9eff">
+    <meta name="color-scheme" content="dark light">
+
+    <!-- Favicon (desktop + mobile moderno) -->
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <!-- iOS Safari (ícone na tela inicial) -->
+    <link rel="apple-touch-icon" href="favicon.svg">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FlowScript">
+    <!-- Android / PWA install -->
+    <link rel="manifest" href="manifest.webmanifest">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app">
+        <!-- HEADER -->
+        <header class="header">
+            <div class="brand">
+                <div class="logo-wrap">
+                    <svg class="logo" viewBox="0 0 24 24" fill="currentColor">
+                        <rect class="logo-card logo-card-back"   x="3"   y="8"   width="13" height="13" rx="2.5" opacity="0.4"/>
+                        <rect class="logo-card logo-card-middle" x="5.5" y="5.5" width="13" height="13" rx="2.5" opacity="0.7"/>
+                        <rect class="logo-card logo-card-front"  x="8"   y="3"   width="13" height="13" rx="2.5"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1>FlowScript</h1>
+                    <span class="tagline">Gerador automático de scripts</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="icon-btn" id="share-btn" title="Copiar link compartilhável" aria-label="Compartilhar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                    </svg>
+                </button>
+                <button class="icon-btn" id="history-btn" title="Histórico (recentes)" aria-label="Histórico">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><polyline points="3 3 3 8 8 8"/><polyline points="12 7 12 12 15 14"/>
+                    </svg>
+                </button>
+                <button class="icon-btn" id="theme-btn" title="Alternar tema (Ctrl+J)" aria-label="Alternar tema">
+                    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/>
+                    </svg>
+                    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- STEPS INDICATOR -->
+        <nav class="stepper" aria-label="Progresso">
+            <div class="step" data-step="1">
+                <div class="step-num">1</div>
+                <span>Tarefa</span>
+            </div>
+            <div class="step-divider"></div>
+            <div class="step" data-step="2">
+                <div class="step-num">2</div>
+                <span>Linguagem</span>
+            </div>
+            <div class="step-divider"></div>
+            <div class="step" data-step="3">
+                <div class="step-num">3</div>
+                <span>Parâmetros</span>
+            </div>
+            <div class="step-divider"></div>
+            <div class="step" data-step="4">
+                <div class="step-num">4</div>
+                <span>Resultado</span>
+            </div>
+        </nav>
+
+        <main class="content">
+            <!-- TASKS -->
+            <section class="card animate-in" id="task-card">
+                <div class="card-header">
+                    <h2><span class="card-num">1</span> Escolha a tarefa</h2>
+                    <div class="search-wrap">
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                        </svg>
+                        <input type="search" class="search" id="task-search" placeholder="Buscar tarefa... (Ctrl+K)" aria-label="Buscar tarefa">
+                    </div>
+                </div>
+                <div class="task-categories" id="tasks"></div>
+            </section>
+
+            <!-- LANGUAGES -->
+            <section class="card animate-in" id="lang-card" style="animation-delay:0.05s">
+                <div class="card-header">
+                    <h2><span class="card-num">2</span> Escolha a linguagem</h2>
+                </div>
+                <div class="lang-grid" id="languages">
+                    <button class="lang-option" data-lang="powershell">
+                        <div class="lang-icon ps-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/>
+                            </svg>
+                        </div>
+                        <div class="lang-info">
+                            <span class="lang-name">PowerShell</span>
+                            <span class="lang-desc">Windows • .ps1</span>
+                        </div>
+                    </button>
+                    <button class="lang-option" data-lang="bash">
+                        <div class="lang-icon bash-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/>
+                            </svg>
+                        </div>
+                        <div class="lang-info">
+                            <span class="lang-name">Bash</span>
+                            <span class="lang-desc">Linux / macOS • .sh</span>
+                        </div>
+                    </button>
+                    <button class="lang-option" data-lang="python">
+                        <div class="lang-icon py-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 2a4 4 0 0 0-4 4v4h8V8H10"/><path d="M12 22a4 4 0 0 0 4-4v-4H8v2h6"/>
+                            </svg>
+                        </div>
+                        <div class="lang-info">
+                            <span class="lang-name">Python</span>
+                            <span class="lang-desc">Multiplataforma • .py</span>
+                        </div>
+                    </button>
+                </div>
+            </section>
+
+            <!-- PARAMETERS -->
+            <section class="card animate-in" id="params-card" hidden>
+                <div class="card-header">
+                    <h2><span class="card-num">3</span> Ajuste os parâmetros</h2>
+                    <span class="task-info-badge" id="task-info"></span>
+                </div>
+                <div class="params-grid" id="params-container"></div>
+                <div class="advanced">
+                    <details>
+                        <summary>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                            </svg>
+                            Opções avançadas
+                        </summary>
+                        <div class="advanced-content">
+                            <div class="param-group">
+                                <label for="opt-filename">Nome do arquivo</label>
+                                <input type="text" id="opt-filename" placeholder="Auto (baseado na tarefa)">
+                                <div class="hint">Deixe vazio para usar o nome padrão.</div>
+                            </div>
+                            <div class="option-toggles">
+                                <label class="switch">
+                                    <input type="checkbox" id="opt-header" checked>
+                                    <span class="switch-slider"></span>
+                                    <span>Incluir cabeçalho com data e parâmetros</span>
+                                </label>
+                                <label class="switch">
+                                    <input type="checkbox" id="opt-live" checked>
+                                    <span class="switch-slider"></span>
+                                    <span>Atualizar script em tempo real</span>
+                                </label>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+                <div class="param-hint-box" id="task-description"></div>
+            </section>
+
+            <!-- ACTIONS -->
+            <section class="actions-bar">
+                <button class="btn-primary" id="generate" disabled>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                    </svg>
+                    Gerar Script
+                    <kbd>Ctrl+↵</kbd>
+                </button>
+                <button class="btn-ghost" id="reset">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><polyline points="3 3 3 8 8 8"/>
+                    </svg>
+                    Limpar
+                </button>
+            </section>
+
+            <!-- WELCOME (empty state) -->
+            <section class="welcome-card animate-in" id="welcome-card">
+                <div class="welcome-icon">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="3"   y="8"   width="13" height="13" rx="2.5" opacity="0.4"/>
+                        <rect x="5.5" y="5.5" width="13" height="13" rx="2.5" opacity="0.7"/>
+                        <rect x="8"   y="3"   width="13" height="13" rx="2.5"/>
+                    </svg>
+                </div>
+                <h3>Selecione uma tarefa e linguagem pra começar</h3>
+                <p>Os scripts gerados aparecem aqui, com sintaxe colorida e prontos pra copiar ou baixar.</p>
+                <div class="welcome-features">
+                    <div class="feat"><strong>28 tarefas</strong><span>de admin de sistema</span></div>
+                    <div class="feat"><strong>3 linguagens</strong><span>PowerShell / Bash / Python</span></div>
+                    <div class="feat"><strong>183 programas</strong><span>no catálogo de instalação</span></div>
+                    <div class="feat"><strong>100% local</strong><span>sem servidor, sem upload</span></div>
+                </div>
+            </section>
+
+            <!-- OUTPUT -->
+            <section class="card output-card animate-in" id="output-card" hidden>
+                <div class="output-header">
+                    <div class="output-meta">
+                        <span class="lang-badge" id="lang-badge"></span>
+                        <span class="filename" id="filename"></span>
+                        <span class="stats" id="stats"></span>
+                    </div>
+                    <div class="output-actions">
+                        <button class="icon-btn-sm" id="toggle-wrap" title="Quebra de linha">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="3 6 21 6"/><path d="M3 12h15a4 4 0 1 1 0 8H13"/><polyline points="16 16 12 20 16 24"/><line x1="3" y1="18" x2="10" y2="18"/>
+                            </svg>
+                        </button>
+                        <button class="icon-btn-sm" id="toggle-fullscreen" title="Tela cheia">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/>
+                            </svg>
+                        </button>
+                        <button class="icon-btn-sm" id="copy" title="Copiar para área de transferência">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                            </svg>
+                            <span>Copiar</span>
+                        </button>
+                        <button class="icon-btn-sm primary" id="download" title="Baixar arquivo">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            <span>Baixar</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="code-wrap" id="code-wrap">
+                    <div class="line-numbers" id="line-numbers"></div>
+                    <pre id="output"><code id="output-code"></code></pre>
+                </div>
+            </section>
+        </main>
+
+        <!-- HISTORY DRAWER -->
+        <aside class="drawer" id="history-drawer" aria-hidden="true">
+            <div class="drawer-header">
+                <h3>Histórico recente</h3>
+                <button class="icon-btn" id="close-history" aria-label="Fechar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="drawer-body" id="history-list">
+                <p class="empty-state">Nenhum script gerado ainda.</p>
+            </div>
+            <div class="drawer-footer">
+                <button class="btn-ghost-sm" id="clear-history">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                    </svg>
+                    Limpar histórico
+                </button>
+            </div>
+        </aside>
+        <div class="drawer-backdrop" id="drawer-backdrop"></div>
+
+        <footer class="footer">
+            <p>
+                <span>Revise sempre o script antes de executar.</span>
+                <span class="separator">•</span>
+                <span>Alguns comandos exigem privilégios de administrador.</span>
+                <span class="separator">•</span>
+                <a href="#" id="show-shortcuts">Atalhos de teclado</a>
+            </p>
+        </footer>
+    </div>
+
+    <!-- SHORTCUTS MODAL -->
+    <div class="modal-backdrop" id="shortcuts-modal" hidden>
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Atalhos de teclado</h3>
+                <button class="icon-btn" id="close-shortcuts" aria-label="Fechar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="shortcut"><kbd>Ctrl</kbd><kbd>K</kbd><span>Focar busca de tarefas</span></div>
+                <div class="shortcut"><kbd>Ctrl</kbd><kbd>↵</kbd><span>Gerar script</span></div>
+                <div class="shortcut"><kbd>Ctrl</kbd><kbd>C</kbd><span>Copiar (com código selecionado)</span></div>
+                <div class="shortcut"><kbd>Ctrl</kbd><kbd>S</kbd><span>Baixar script</span></div>
+                <div class="shortcut"><kbd>Ctrl</kbd><kbd>J</kbd><span>Alternar tema</span></div>
+                <div class="shortcut"><kbd>F</kbd><span>Tela cheia do código</span></div>
+                <div class="shortcut"><kbd>Esc</kbd><span>Fechar modal / drawer / sair da tela cheia</span></div>
+                <div class="shortcut"><kbd>?</kbd><span>Mostrar esta ajuda</span></div>
+                <div class="shortcut"><kbd>Ctrl</kbd><kbd>L</kbd><span>Limpar seleção (reset)</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST CONTAINER -->
+    <div class="toast-container" id="toasts" aria-live="polite"></div>
+
+    <script src="highlight.js"></script>
+    <script src="templates.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

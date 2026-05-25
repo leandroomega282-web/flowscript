@@ -1,0 +1,19 @@
+{
+    "name": "FlowScript",
+    "short_name": "FlowScript",
+    "description": "Gerador automático de scripts em PowerShell, Bash e Python",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "orientation": "any",
+    "lang": "pt-BR",
+    "theme_color": "#5b9eff",
+    "background_color": "#07090f",
+    "icons": [
+        {
+            "src": "favicon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ]
+}
