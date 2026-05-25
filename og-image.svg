@@ -41,14 +41,14 @@
     <!-- Features -->
     <g font-family="Inter, sans-serif" font-size="22" font-weight="500" fill="#e8ecf3">
         <g transform="translate(360, 420)">
-            <rect width="220" height="50" rx="10" fill="#131a28" stroke="#232c40"/>
+            <rect width="200" height="50" rx="10" fill="#131a28" stroke="#232c40"/>
             <text x="20" y="32">⚡  28 tarefas</text>
         </g>
-        <g transform="translate(595, 420)">
-            <rect width="270" height="50" rx="10" fill="#131a28" stroke="#232c40"/>
-            <text x="20" y="32">🖥  PowerShell / Bash / Python</text>
+        <g transform="translate(575, 420)">
+            <rect width="330" height="50" rx="10" fill="#131a28" stroke="#232c40"/>
+            <text x="20" y="32">🖥  PowerShell · Bash · Python</text>
         </g>
-        <g transform="translate(880, 420)">
+        <g transform="translate(920, 420)">
             <rect width="220" height="50" rx="10" fill="#131a28" stroke="#232c40"/>
             <text x="20" y="32">📦  183 programas</text>
         </g>
