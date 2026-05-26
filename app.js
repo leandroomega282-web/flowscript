@@ -273,7 +273,7 @@ function renderSoftwarePicker(param) {
     }
     const selected = new Set(state.params[param.name]);
 
-    // Header com busca + contador.
+    // Header com busca + toggle de modo rápido + contador.
     const header = document.createElement("div");
     header.className = "sp-header";
     header.innerHTML = `
@@ -283,9 +283,20 @@ function renderSoftwarePicker(param) {
             </svg>
             <input type="search" class="sp-search" placeholder="Buscar programa...">
         </div>
+        <label class="sp-quick-toggle" title="Quando ligado, clicar no programa baixa um .bat que auto-instala">
+            <input type="checkbox" class="sp-quick-input">
+            <span class="sp-quick-slider"></span>
+            <span class="sp-quick-label">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                </svg>
+                Modo Rápido
+            </span>
+        </label>
         <div class="sp-counter"><span class="sp-count">${selected.size}</span> selecionados</div>
     `;
     container.appendChild(header);
+    const quickToggle = header.querySelector(".sp-quick-input");
 
     const counter = header.querySelector(".sp-count");
     const search = header.querySelector(".sp-search");
@@ -325,6 +336,21 @@ function renderSoftwarePicker(param) {
             `;
 
             card.addEventListener("click", () => {
+                // Se modo rápido ligado: baixa .bat de auto-instalação direto.
+                if (quickToggle.checked) {
+                    if (!supported && state.lang === "bash") {
+                        showToast(`${item.name} não está disponível no Linux.`, "warning");
+                        return;
+                    }
+                    if (!item.winget) {
+                        showToast(`${item.name} não tem instalador automático.`, "warning");
+                        return;
+                    }
+                    quickInstallSoftware(item);
+                    return;
+                }
+
+                // Modo normal: toggle de seleção.
                 if (selected.has(item.id)) {
                     selected.delete(item.id);
                     card.classList.remove("selected");
@@ -364,6 +390,83 @@ function renderSoftwarePicker(param) {
 function isSoftwareSupported(item, lang) {
     if (lang === "bash") return !!item.apt;
     return !!item.winget;  // PowerShell e Python usam winget
+}
+
+// Gera e baixa um .bat que se auto-eleva via UAC, instala via winget e se auto-deleta.
+function quickInstallSoftware(item) {
+    // Sanitiza o nome do programa pra usar no nome do arquivo (ASCII safe).
+    const safeName = item.name.replace(/[^a-zA-Z0-9-]/g, "-").toLowerCase();
+    const filename = `instalar-${safeName}.bat`;
+
+    const bat = `@echo off
+title FlowScript - Instalando ${item.name}
+chcp 65001 >nul
+
+REM ============================================================
+REM   Auto-instalador gerado por FlowScript
+REM   Programa: ${item.name}
+REM   Winget ID: ${item.winget}
+REM   Este arquivo se auto-deleta apos a execucao.
+REM ============================================================
+
+REM Verifica privilegios de admin. Se nao for, re-abre com UAC.
+NET SESSION >nul 2>&1
+if %errorlevel% NEQ 0 (
+    powershell -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
+    exit /b
+)
+
+cd /d "%~dp0"
+cls
+echo.
+echo  ============================================================
+echo   FlowScript - Instalando ${item.name}
+echo  ============================================================
+echo.
+
+REM Verifica se o winget existe.
+where winget >nul 2>&1
+if %errorlevel% NEQ 0 (
+    echo  ERRO: winget nao encontrado.
+    echo  Instale o "App Installer" pela Microsoft Store e tente de novo.
+    echo.
+    pause
+    exit /b 1
+)
+
+REM Instala silenciosamente.
+winget install --id ${item.winget} --silent --accept-source-agreements --accept-package-agreements
+
+set RESULT=%errorlevel%
+echo.
+echo  ============================================================
+if %RESULT% EQU 0 (
+    echo   [OK] ${item.name} instalado com sucesso!
+) else (
+    echo   [X] Falha [codigo %RESULT%]
+    echo   Tente rodar manualmente: winget install --id ${item.winget}
+)
+echo  ============================================================
+echo.
+echo  Esta janela vai fechar em 5 segundos...
+timeout /t 5 /nobreak >nul
+
+REM Auto-deleta este arquivo (truque do CMD).
+(goto) 2>nul & del "%~f0"
+`;
+
+    // Baixa o arquivo.
+    const blob = new Blob([bat], { type: "application/x-msdownload" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showToast(`Baixado ${filename} — clique no arquivo e aceite o UAC para instalar.`, "success");
 }
 
 function validateParams(silent = false) {

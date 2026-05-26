@@ -808,6 +808,103 @@ body::before {
     white-space: nowrap;
 }
 
+/* Toggle de modo rápido */
+.sp-quick-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    padding: 5px 10px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-input);
+    border: 1.5px solid var(--border);
+    transition: all var(--transition);
+}
+
+.sp-quick-toggle:hover {
+    border-color: var(--border-strong);
+}
+
+.sp-quick-toggle:has(.sp-quick-input:checked) {
+    background: linear-gradient(135deg, rgba(91,158,255,0.18), rgba(160,107,255,0.10));
+    border-color: var(--accent);
+    box-shadow: var(--shadow-glow);
+}
+
+.sp-quick-input {
+    appearance: none;
+    width: 30px;
+    height: 18px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    position: relative;
+    cursor: pointer;
+    transition: background var(--transition);
+    margin: 0;
+}
+
+.sp-quick-input::before {
+    content: "";
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    width: 14px;
+    height: 14px;
+    background: var(--text-muted);
+    border-radius: 50%;
+    transition: all var(--transition);
+}
+
+.sp-quick-input:checked {
+    background: var(--gradient-brand);
+    border-color: transparent;
+}
+
+.sp-quick-input:checked::before {
+    transform: translateX(12px);
+    background: white;
+}
+
+.sp-quick-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.sp-quick-label svg {
+    width: 13px;
+    height: 13px;
+}
+
+.sp-quick-toggle:has(.sp-quick-input:checked) .sp-quick-label {
+    color: var(--accent);
+}
+
+/* Quando modo rápido está ligado, cards mudam o cursor e tem um glow sutil */
+.software-picker:has(.sp-quick-input:checked) .sp-card:hover {
+    box-shadow: 0 0 0 2px var(--accent), 0 4px 16px rgba(91,158,255,0.3);
+    transform: translateY(-2px) scale(1.02);
+}
+
+.software-picker:has(.sp-quick-input:checked) .sp-card::before {
+    content: "⚡";
+    position: absolute;
+    bottom: 4px;
+    right: 6px;
+    font-size: 0.9rem;
+    opacity: 0;
+    transition: opacity var(--transition);
+}
+
+.software-picker:has(.sp-quick-input:checked) .sp-card:hover::before {
+    opacity: 1;
+}
+
 .sp-counter .sp-count {
     font-family: "JetBrains Mono", monospace;
 }
