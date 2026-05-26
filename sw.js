@@ -1,7 +1,7 @@
 // Service Worker do FlowScript — cache-first com fallback de rede.
 // Permite uso totalmente offline depois da primeira visita.
 
-const CACHE_NAME = "flowscript-v2";
+const CACHE_NAME = "flowscript-v3";
 const ASSETS = [
     "./",
     "./index.html",
