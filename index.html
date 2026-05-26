@@ -339,6 +339,75 @@
         </div>
     </div>
 
+    <!-- SETUP MODAL -->
+    <div class="modal-backdrop" id="setup-modal" hidden>
+        <div class="modal modal-wide">
+            <div class="modal-header">
+                <h3>⚙️ Configurar Modo Rápido neste PC</h3>
+                <button class="icon-btn" id="close-setup" aria-label="Fechar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="modal-intro">
+                    Faça este passo apenas <strong>1 vez por PC</strong>. Depois disso, o Modo Rápido vai baixar e executar programas <strong>sem nenhum aviso de bloqueio</strong> do Windows.
+                </p>
+
+                <ol class="setup-steps">
+                    <li>
+                        <span class="step-circle">1</span>
+                        <div>
+                            <strong>Clique em "Baixar setup" abaixo</strong>
+                            <span>Vai baixar o arquivo <code>flowscript-setup-uma-vez.reg</code> (~500 bytes)</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="step-circle">2</span>
+                        <div>
+                            <strong>Abra a pasta Downloads</strong>
+                            <span>No Explorador de Arquivos (Win+E) → Downloads</span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="step-circle">3</span>
+                        <div>
+                            <strong>Duplo clique no arquivo .reg</strong>
+                            <span>Se aparecer "Editor do Registro está tentando adicionar...", clica em <strong>Sim</strong></span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="step-circle">4</span>
+                        <div>
+                            <strong>Confirma a mensagem de sucesso</strong>
+                            <span>"As chaves e valores foram adicionados com êxito" → <strong>OK</strong></span>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="step-circle done">✓</span>
+                        <div>
+                            <strong>Pronto pra sempre neste PC!</strong>
+                            <span>Agora use Modo Rápido normal — clica no programa, duplo clique no .bat, UAC → Sim, instala.</span>
+                        </div>
+                    </li>
+                </ol>
+
+                <div class="setup-note">
+                    <strong>É seguro?</strong>
+                    Sim. Só desativa o aviso amarelo do Windows para arquivos baixados. <strong>Antivírus, UAC, firewall e outras proteções continuam ativos</strong>. O setup só mexe em 2 chaves do seu registro de usuário (não afeta outros usuários do PC).
+                </div>
+
+                <button class="btn-primary modal-action-btn" id="download-setup-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Baixar setup agora
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- TOAST CONTAINER -->
     <div class="toast-container" id="toasts" aria-live="polite"></div>
 

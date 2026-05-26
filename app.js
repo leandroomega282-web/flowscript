@@ -283,7 +283,7 @@ function renderSoftwarePicker(param) {
             </svg>
             <input type="search" class="sp-search" placeholder="Buscar programa...">
         </div>
-        <label class="sp-quick-toggle" title="Quando ligado, clicar no programa baixa um .bat que auto-instala">
+        <label class="sp-quick-toggle" title="Quando ligado, clicar no programa baixa um .bat que auto-instala via UAC">
             <input type="checkbox" class="sp-quick-input">
             <span class="sp-quick-slider"></span>
             <span class="sp-quick-label">
@@ -293,10 +293,19 @@ function renderSoftwarePicker(param) {
                 Modo Rápido
             </span>
         </label>
-        <div class="sp-counter"><span class="sp-count">${selected.size}</span> selecionados</div>
+        <button type="button" class="sp-setup-btn" title="Configura o Windows pra .bat baixar sem bloqueio (faça 1 vez por PC)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+            Configurar este PC
+        </button>
+        <div class="sp-counter"><span class="sp-count">${selected.size}</span><span>selecionados</span></div>
     `;
     container.appendChild(header);
     const quickToggle = header.querySelector(".sp-quick-input");
+    const setupBtn = header.querySelector(".sp-setup-btn");
+    setupBtn.addEventListener("click", openSetupModal);
 
     const counter = header.querySelector(".sp-count");
     const search = header.querySelector(".sp-search");
@@ -392,9 +401,46 @@ function isSoftwareSupported(item, lang) {
     return !!item.winget;  // PowerShell e Python usam winget
 }
 
+// Baixa um .reg que desativa o bloqueio "Mark of the Web" pra arquivos baixados.
+// Faça isso 1x por PC pra Modo Rápido funcionar sem aviso amarelo.
+function downloadWindowsSetup() {
+    const reg = `Windows Registry Editor Version 5.00
+
+; ============================================================
+;  FlowScript - Setup unico (faca isso 1 vez por PC)
+;  Desativa o aviso "Suas configuracoes de seguranca impediram..."
+;  para arquivos baixados, permitindo que .bat do Modo Rapido
+;  executem com duplo clique.
+;
+;  Seguro: antivirus, UAC, firewall e outras protecoes continuam
+;  funcionando normalmente. So o aviso amarelo desaparece.
+;
+;  Pra desfazer: rode novamente com os values em dword:00000000
+; ============================================================
+
+[HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Attachments]
+"SaveZoneInformation"=dword:00000001
+
+[HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Internet Settings\\Zones\\3]
+"1806"=dword:00000000
+`;
+
+    const blob = new Blob([reg], { type: "application/octet-stream" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "flowscript-setup-uma-vez.reg";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showToast("Baixado! Duplo clique no .reg, confirma com Sim, e nunca mais precisa fazer isso neste PC.", "info");
+}
+
 // Gera e baixa um .bat que se auto-eleva via UAC, instala via winget e se auto-deleta.
+// Requer setup prévio (.reg) pra Windows não bloquear o .bat baixado.
 function quickInstallSoftware(item) {
-    // Sanitiza o nome do programa pra usar no nome do arquivo (ASCII safe).
     const safeName = item.name.replace(/[^a-zA-Z0-9-]/g, "-").toLowerCase();
     const filename = `instalar-${safeName}.bat`;
 
@@ -402,21 +448,12 @@ function quickInstallSoftware(item) {
 title FlowScript - Instalando ${item.name}
 chcp 65001 >nul
 
-REM ============================================================
-REM   Auto-instalador gerado por FlowScript
-REM   Programa: ${item.name}
-REM   Winget ID: ${item.winget}
-REM   Este arquivo se auto-deleta apos a execucao.
-REM ============================================================
-
-REM Verifica privilegios de admin. Se nao for, re-abre com UAC.
 NET SESSION >nul 2>&1
 if %errorlevel% NEQ 0 (
     powershell -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
     exit /b
 )
 
-cd /d "%~dp0"
 cls
 echo.
 echo  ============================================================
@@ -424,17 +461,14 @@ echo   FlowScript - Instalando ${item.name}
 echo  ============================================================
 echo.
 
-REM Verifica se o winget existe.
 where winget >nul 2>&1
 if %errorlevel% NEQ 0 (
     echo  ERRO: winget nao encontrado.
-    echo  Instale o "App Installer" pela Microsoft Store e tente de novo.
-    echo.
+    echo  Instale "App Installer" pela Microsoft Store.
     pause
     exit /b 1
 )
 
-REM Instala silenciosamente.
 winget install --id ${item.winget} --silent --accept-source-agreements --accept-package-agreements
 
 set RESULT=%errorlevel%
@@ -444,18 +478,13 @@ if %RESULT% EQU 0 (
     echo   [OK] ${item.name} instalado com sucesso!
 ) else (
     echo   [X] Falha [codigo %RESULT%]
-    echo   Tente rodar manualmente: winget install --id ${item.winget}
 )
 echo  ============================================================
 echo.
-echo  Esta janela vai fechar em 5 segundos...
 timeout /t 5 /nobreak >nul
-
-REM Auto-deleta este arquivo (truque do CMD).
 (goto) 2>nul & del "%~f0"
 `;
 
-    // Baixa o arquivo.
     const blob = new Blob([bat], { type: "application/x-msdownload" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -466,7 +495,7 @@ REM Auto-deleta este arquivo (truque do CMD).
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    showToast(`Baixado ${filename} — clique no arquivo e aceite o UAC para instalar.`, "success");
+    showToast(`✓ Baixado ${filename}. Clique nele pra instalar.`, "success");
 }
 
 function validateParams(silent = false) {
@@ -795,6 +824,14 @@ function closeShortcuts() {
     $("#shortcuts-modal").hidden = true;
 }
 
+function openSetupModal() {
+    $("#setup-modal").hidden = false;
+}
+
+function closeSetupModal() {
+    $("#setup-modal").hidden = true;
+}
+
 // ===========================================================================
 // Share via URL hash (base64 encoded JSON)
 // ===========================================================================
@@ -946,6 +983,16 @@ function init() {
         if (e.target.id === "shortcuts-modal") closeShortcuts();
     });
 
+    // Setup modal
+    $("#close-setup").addEventListener("click", closeSetupModal);
+    $("#setup-modal").addEventListener("click", (e) => {
+        if (e.target.id === "setup-modal") closeSetupModal();
+    });
+    $("#download-setup-btn").addEventListener("click", () => {
+        downloadWindowsSetup();
+        closeSetupModal();
+    });
+
     // Atalhos de teclado globais
     document.addEventListener("keydown", (e) => {
         const inInput = ["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement?.tagName);
@@ -963,7 +1010,8 @@ function init() {
             toggleTheme();
         }
         if (e.key === "Escape") {
-            if (!$("#shortcuts-modal").hidden) closeShortcuts();
+            if (!$("#setup-modal").hidden) closeSetupModal();
+            else if (!$("#shortcuts-modal").hidden) closeShortcuts();
             else if ($("#code-wrap").classList.contains("fullscreen")) toggleFullscreen();
             else closeDrawer();
         }

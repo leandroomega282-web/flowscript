@@ -798,8 +798,10 @@ body::before {
 .sp-search:focus { outline: none; }
 
 .sp-counter {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
     font-size: 0.82rem;
-    color: var(--text-secondary);
     background: var(--accent-glow);
     color: var(--accent);
     padding: 5px 12px;
@@ -808,14 +810,19 @@ body::before {
     white-space: nowrap;
 }
 
+.sp-count {
+    font-family: "JetBrains Mono", monospace;
+}
+
 /* Toggle de modo rápido */
 .sp-quick-toggle {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     cursor: pointer;
     user-select: none;
-    padding: 5px 10px;
+    padding: 5px 12px;
     border-radius: var(--radius-sm);
     background: var(--bg-input);
     border: 1.5px solid var(--border);
@@ -881,6 +888,35 @@ body::before {
     height: 13px;
 }
 
+/* Botão "Configurar este PC" */
+.sp-setup-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--bg-input);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition);
+    white-space: nowrap;
+}
+
+.sp-setup-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.sp-setup-btn svg {
+    width: 13px;
+    height: 13px;
+}
+
 .sp-quick-toggle:has(.sp-quick-input:checked) .sp-quick-label {
     color: var(--accent);
 }
@@ -905,9 +941,6 @@ body::before {
     opacity: 1;
 }
 
-.sp-counter .sp-count {
-    font-family: "JetBrains Mono", monospace;
-}
 
 .sp-body {
     max-height: 460px;
@@ -1639,6 +1672,104 @@ kbd {
     display: flex;
     flex-direction: column;
     gap: 12px;
+}
+
+.modal-wide {
+    max-width: 580px;
+}
+
+.modal-intro {
+    margin-bottom: 20px;
+    color: var(--text-secondary);
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+.setup-steps {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 18px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.setup-steps li {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+}
+
+.step-circle {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--gradient-brand);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.92rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px -3px var(--accent-glow-strong);
+}
+
+.step-circle.done {
+    background: var(--success);
+    box-shadow: 0 4px 10px -3px rgba(74, 222, 128, 0.5);
+}
+
+.setup-steps li > div {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding-top: 4px;
+}
+
+.setup-steps strong {
+    color: var(--text);
+    font-size: 0.92rem;
+    font-weight: 600;
+}
+
+.setup-steps span {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    line-height: 1.45;
+}
+
+.setup-steps code {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.85em;
+    color: var(--text);
+}
+
+.setup-note {
+    background: var(--accent-glow);
+    border-left: 3px solid var(--accent);
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 18px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.setup-note strong {
+    color: var(--text);
+    margin-right: 4px;
+}
+
+.modal-action-btn {
+    width: 100%;
+    justify-content: center;
+    font-size: 1rem;
+    padding: 14px;
 }
 
 .shortcut {
